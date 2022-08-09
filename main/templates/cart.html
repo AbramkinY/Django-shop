@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h3 class="text-center mt-5 mb-5">Ваша корзина {% if not cart.products.count %}пуста{% endif %}</h3>
+        {% if cart.products.count %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Наименование:</th>
+              <th scope="col">Изображение:</th>
+              <th scope="col">Кол-во:</th>
+                <th scope="col">Цена за шт.</th>
+                <th scope="col"> Итого:</th>
+                <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart.products.all %}
+            <tr>
+              <th scope="row">{{ item.product.title}} </th>
+              <td class="w-25"><img style="height:120px; width:120px;" class="img-fluid" src="{{ item.product.image.url }}"></td>
+              <td>
+                  <form action="{% url 'change_qty' slug=item.product.slug %}" method="POST">
+                      {% csrf_token %}
+                      <input type="number" class="form-control" name="qty" style="width: 70px;" min="1" value="{{ item.qty }}">
+                      <br>
+                      <input type="submit" class="btn btn-primary" value="Изменить">
+                  </form>
+              </td>
+                <td>{{ item.product.price }} руб</td>
+                <td>{{ item.final_price }} руб</td>
+                <td><a href="{% url 'remove_from_cart' slug=item.product.slug %}"><button class="btn btn-danger">Удалить из корзины</button></a></td>
+            </tr>
+            {% endfor %}
+                <tr>
+                    <td colspan="1">Итоги:</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ cart.final_price }} руб</td>
+                    <td><a href="{% url 'checkout' %}"><button class="btn btn-primary">Перейти к оформлению</button></a></td>
+                </tr>
+          </tbody>
+        </table>
+        {% endif %}
+    </div>
+</section>
+{% endblock content %}
